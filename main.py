@@ -1,4 +1,5 @@
 import pygame
+import time
 
 
 def play_music(filepath):
@@ -26,3 +27,9 @@ if __name__ == '__main__':
     # Executed when app is loaded
     print("init pygame mixer")
     pygame.mixer.init()
+
+    play_music("music/Musique_Noel.mp3")
+
+    time.sleep(5)
+
+    stop_music()
