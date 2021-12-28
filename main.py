@@ -117,6 +117,7 @@ if __name__ == '__main__':
     team_pressed_a_button = ""
     red_score = 0
     blue_score = 0
+    music_number_to_play = 0
 
     button_continue_pos_X = 10
     button_continue_pos_Y = 200
@@ -155,7 +156,11 @@ if __name__ == '__main__':
                             blue_score += 1
                         elif team_pressed_a_button == "red":
                             red_score += 1
-                        play_music(file_list[0])
+                        play_music(file_list[music_number_to_play])
+                        music_number_to_play += 1
+                        if music_number_to_play == len(file_list):
+                            music_number_to_play = 0
+                            print("All musics have been played !")
                         music_is_playing = True
                     else:
                         continue_music()
