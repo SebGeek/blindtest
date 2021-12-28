@@ -60,6 +60,17 @@ def set_volume(volume):
     pygame.mixer.music.set_volume(volume / 100)
 
 
+def draw_button(screen, text, button_pos_X, button_pos_Y, button_width, button_height):
+    # if mouse is hovered on a button, it changes to lighter shade
+    if button_pos_X <= mouse[0] <= button_pos_X + button_width and button_pos_Y <= mouse[1] <= button_pos_Y + button_height:
+        color = color_light
+    else:
+        color = color_dark
+    pygame.draw.rect(screen, color, [button_pos_X, button_pos_Y, button_width, button_height])
+    # superimposing the text onto our button
+    screen.blit(text, (button_pos_X, button_pos_Y))
+
+
 if __name__ == '__main__':
 
     pygame.init()
@@ -79,7 +90,8 @@ if __name__ == '__main__':
     height = screen.get_height()
 
     smallfont = pygame.font.SysFont('Corbel', 35)
-    text = smallfont.render('continue', True, color)
+    text_continue = smallfont.render('continue', True, color)
+    text_bad = smallfont.render('bad', True, color)
 
     # Loop until the user clicks the close button.
     done = False
@@ -106,10 +118,15 @@ if __name__ == '__main__':
     red_score = 0
     blue_score = 0
 
-    button_pos_X = 10  # width / 2
-    button_pos_Y = 200  # height / 2
-    button_width = 140
-    button_height = 40
+    button_continue_pos_X = 10
+    button_continue_pos_Y = 200
+    button_continue_width = 140
+    button_continue_height = 40
+
+    button_bad_pos_X = 10
+    button_bad_pos_Y = 300
+    button_bad_width = 140
+    button_bad_height = 40
 
     # -------- Main Program Loop -----------
     while not done:
@@ -131,8 +148,13 @@ if __name__ == '__main__':
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # if the mouse is clicked on the button the game is terminated
-                if button_pos_X <= mouse[0] <= button_pos_X + button_width and button_pos_Y <= mouse[1] <= button_pos_Y + button_height:
+                if button_continue_pos_X <= mouse[0] <= button_continue_pos_X + button_continue_width and \
+                   button_continue_pos_Y <= mouse[1] <= button_continue_pos_Y + button_continue_height:
                     if not music_is_playing:
+                        if team_pressed_a_button == "blue":
+                            blue_score += 1
+                        elif team_pressed_a_button == "red":
+                            red_score += 1
                         play_music(file_list[0])
                         music_is_playing = True
                     else:
@@ -145,7 +167,6 @@ if __name__ == '__main__':
         screen.fill(WHITE)
         textPrint.reset()
 
-
         textPrint.tprint(screen, f"Last team having pressed a button is {team_pressed_a_button}")
         textPrint.tprint(screen, "")
 
@@ -153,15 +174,8 @@ if __name__ == '__main__':
         textPrint.tprint(screen, f"Score team BLUE: {blue_score}")
         textPrint.tprint(screen, f"Score team   RED: {red_score}")
 
-
-        # if mouse is hovered on a button, it changes to lighter shade
-        if button_pos_X <= mouse[0] <= button_pos_X + button_width and button_pos_Y <= mouse[1] <= button_pos_Y + button_height:
-            color = color_light
-        else:
-            color = color_dark
-        pygame.draw.rect(screen, color, [button_pos_X, button_pos_Y, button_width, button_height])
-        # superimposing the text onto our button
-        screen.blit(text, (button_pos_X, button_pos_Y))
+        draw_button(screen, text_continue, button_continue_pos_X, button_continue_pos_Y, button_continue_width, button_continue_height)
+        draw_button(screen, text_bad, button_bad_pos_X, button_bad_pos_Y, button_bad_width, button_bad_height)
 
         #
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
