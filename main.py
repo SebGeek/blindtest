@@ -106,40 +106,38 @@ if __name__ == '__main__':
     for joystick in joysticks:
         joystick.init()
 
+    team_pressed_a_button = ""
 
     # -------- Main Program Loop -----------
     while not done:
 
-        # stores the (x,y) coordinates into
-        # the variable as a tuple
         mouse = pygame.mouse.get_pos()
 
         #
         # EVENT PROCESSING STEP
         #
-        # Possible joystick actions: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
-        # JOYBUTTONUP, JOYHATMOTION
         for event in pygame.event.get():  # User did something.
             if event.type == pygame.QUIT:  # If user clicked close.
                 done = True  # Flag that we are done, so we exit this loop.
             elif event.type == pygame.JOYBUTTONDOWN:
-                print(event)
+                team_pressed_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # if the mouse is clicked on the button the game is terminated
                 if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
                     done = True  # Flag that we are done, so we exit this loop.
 
-
         #
         # DRAWING STEP
         #
-        # First, clear the screen to white. Don't put other drawing commands
-        # above this, or they will be erased with this command.
+        # First, clear the screen to white
         screen.fill(WHITE)
         textPrint.reset()
 
-        textPrint.tprint(screen, "Number of joysticks: {}".format(len(joysticks)))
+        textPrint.tprint(screen, f"Number of joysticks: {len(joysticks)}")
+        textPrint.indent()
+
+        textPrint.tprint(screen, f"Last team having pressed a button {team_pressed_a_button}")
         textPrint.indent()
 
         # # For each joystick:
