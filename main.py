@@ -70,6 +70,14 @@ def draw_button(screen, text, button_pos_X, button_pos_Y, button_width, button_h
     # superimposing the text onto our button
     screen.blit(text, (button_pos_X, button_pos_Y))
 
+def new_music(music_number_to_play):
+    play_music(file_list[music_number_to_play])
+    music_number_to_play += 1
+    if music_number_to_play == len(file_list):
+        music_number_to_play = 0
+        print("All musics have been played !")
+    return music_number_to_play
+
 
 if __name__ == '__main__':
 
@@ -156,14 +164,21 @@ if __name__ == '__main__':
                             blue_score += 1
                         elif team_pressed_a_button == "red":
                             red_score += 1
-                        play_music(file_list[music_number_to_play])
-                        music_number_to_play += 1
-                        if music_number_to_play == len(file_list):
-                            music_number_to_play = 0
-                            print("All musics have been played !")
+
+                        music_number_to_play = new_music(music_number_to_play)
                         music_is_playing = True
                     else:
                         continue_music()
+                elif button_bad_pos_X <= mouse[0] <= button_bad_pos_X + button_bad_width and \
+                   button_bad_pos_Y <= mouse[1] <= button_bad_pos_Y + button_bad_height:
+                    # increment the score of other team
+                    if team_pressed_a_button == "blue":
+                        red_score += 1
+                    elif team_pressed_a_button == "red":
+                        blue_score += 1
+
+                    music_number_to_play = new_music(music_number_to_play)
+                    music_is_playing = True
 
         #
         # DRAWING STEP
