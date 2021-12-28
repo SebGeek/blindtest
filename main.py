@@ -45,11 +45,9 @@ def play_music(filepath):
     pygame.mixer.music.play()
 
 def stop_music():
-    print("stop music")
     pygame.mixer.music.pause()
 
 def continue_music():
-    print("continue music")
     pygame.mixer.music.unpause()
 
 def set_volume(volume):
@@ -69,23 +67,17 @@ if __name__ == '__main__':
 
     play_music("music/Musique_Noel.mp3")
 
-
     # Set the width and height of the screen (width, height).
     screen = pygame.display.set_mode((500, 700))
 
     pygame.display.set_caption("My Game")
 
-    # stores the width of the
-    # screen into a variable
+
     width = screen.get_width()
-    # stores the height of the
-    # screen into a variable
     height = screen.get_height()
-    # defining a font
+
     smallfont = pygame.font.SysFont('Corbel', 35)
-    # rendering a text written in
-    # this font
-    text = smallfont.render('quit', True, color)
+    text = smallfont.render('continue', True, color)
 
     # Loop until the user clicks the close button.
     done = False
@@ -93,14 +85,16 @@ if __name__ == '__main__':
     # Used to manage how fast the screen updates.
     clock = pygame.time.Clock()
 
-    # Initialize the joysticks.
+    # Initialize the joysticks
     pygame.joystick.init()
 
-    # Get ready to print.
+    # Get ready to print
     textPrint = TextPrint()
 
     # Get count of joysticks.
     joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+
+    print(f"Number of teams/joysticks: {len(joysticks)}")
 
     # For each joystick:
     for joystick in joysticks:
@@ -121,11 +115,12 @@ if __name__ == '__main__':
                 done = True  # Flag that we are done, so we exit this loop.
             elif event.type == pygame.JOYBUTTONDOWN:
                 team_pressed_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
+                stop_music()
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # if the mouse is clicked on the button the game is terminated
                 if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
-                    done = True  # Flag that we are done, so we exit this loop.
+                    continue_music()
 
         #
         # DRAWING STEP
@@ -134,33 +129,10 @@ if __name__ == '__main__':
         screen.fill(WHITE)
         textPrint.reset()
 
-        textPrint.tprint(screen, f"Number of joysticks: {len(joysticks)}")
-        textPrint.indent()
 
         textPrint.tprint(screen, f"Last team having pressed a button {team_pressed_a_button}")
         textPrint.indent()
 
-        # # For each joystick:
-        # for joy_num in range(joystick_count):
-        #     joystick = pygame.joystick.Joystick(joy_num)
-        #     joystick.init()
-        #
-        #     textPrint.tprint(screen, "Joystick {}".format(joy_num))
-        #     textPrint.indent()
-        #
-        #     # Get the name from the OS for the controller/joystick.
-        #     name = joystick.get_name()
-        #     textPrint.tprint(screen, "Joystick name: {}".format(name))
-        #
-        #     buttons = joystick.get_numbuttons()
-        #     textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
-        #     textPrint.indent()
-        #
-        #     for i in range(buttons):
-        #         button = joystick.get_button(i)
-        #         textPrint.tprint(screen,
-        #                          "Button {:>2} value: {}".format(i, button))
-        #     textPrint.unindent()
 
         red = (200, 0, 0)
         circleX = 100
@@ -169,15 +141,12 @@ if __name__ == '__main__':
         pygame.draw.circle(screen, red, (circleX, circleY), radius)  # DRAW CIRCLE
 
 
-
-        # if mouse is hovered on a button it
-        # changes to lighter shade
+        # if mouse is hovered on a button, it changes to lighter shade
         if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
-            pygame.draw.rect(screen, color_light, [width / 2, height / 2, 140, 40])
-
+            color = color_light
         else:
-            pygame.draw.rect(screen, color_dark, [width / 2, height / 2, 140, 40])
-
+            color = color_dark
+        pygame.draw.rect(screen, color, [width / 2, height / 2, 140, 40])
         # superimposing the text onto our button
         screen.blit(text, (width / 2 + 50, height / 2))
 
@@ -194,5 +163,4 @@ if __name__ == '__main__':
     stop_music()
 
     # Close the window and quit.
-    # If you forget this line, the program will 'hang' on exit if running from IDLE.
     pygame.quit()
