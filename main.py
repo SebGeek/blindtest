@@ -1,9 +1,16 @@
 import pygame
-#import time
+
 
 # Define some colors.
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
+
+# white color
+color = (255, 255, 255)
+# light shade of the button
+color_light = (170, 170, 170)
+# dark shade of the button
+color_dark = (100, 100, 100)
 
 
 # This is a simple class that will help us print to the screen.
@@ -68,6 +75,18 @@ if __name__ == '__main__':
 
     pygame.display.set_caption("My Game")
 
+    # stores the width of the
+    # screen into a variable
+    width = screen.get_width()
+    # stores the height of the
+    # screen into a variable
+    height = screen.get_height()
+    # defining a font
+    smallfont = pygame.font.SysFont('Corbel', 35)
+    # rendering a text written in
+    # this font
+    text = smallfont.render('quit', True, color)
+
     # Loop until the user clicks the close button.
     done = False
 
@@ -80,8 +99,21 @@ if __name__ == '__main__':
     # Get ready to print.
     textPrint = TextPrint()
 
+    # Get count of joysticks.
+    joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+
+    # For each joystick:
+    for joystick in joysticks:
+        joystick.init()
+
+
     # -------- Main Program Loop -----------
     while not done:
+
+        # stores the (x,y) coordinates into
+        # the variable as a tuple
+        mouse = pygame.mouse.get_pos()
+
         #
         # EVENT PROCESSING STEP
         #
@@ -91,9 +123,13 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:  # If user clicked close.
                 done = True  # Flag that we are done, so we exit this loop.
             elif event.type == pygame.JOYBUTTONDOWN:
-                print("Joystick button pressed.")
-            elif event.type == pygame.JOYBUTTONUP:
-                print("Joystick button released.")
+                print(event)
+            # checks if a mouse is clicked
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # if the mouse is clicked on the button the game is terminated
+                if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
+                    done = True  # Flag that we are done, so we exit this loop.
+
 
         #
         # DRAWING STEP
@@ -103,33 +139,49 @@ if __name__ == '__main__':
         screen.fill(WHITE)
         textPrint.reset()
 
-        # Get count of joysticks.
-        joystick_count = pygame.joystick.get_count()
-
-        textPrint.tprint(screen, "Number of joysticks: {}".format(joystick_count))
+        textPrint.tprint(screen, "Number of joysticks: {}".format(len(joysticks)))
         textPrint.indent()
 
-        # For each joystick:
-        for joy_num in range(joystick_count):
-            joystick = pygame.joystick.Joystick(joy_num)
-            joystick.init()
+        # # For each joystick:
+        # for joy_num in range(joystick_count):
+        #     joystick = pygame.joystick.Joystick(joy_num)
+        #     joystick.init()
+        #
+        #     textPrint.tprint(screen, "Joystick {}".format(joy_num))
+        #     textPrint.indent()
+        #
+        #     # Get the name from the OS for the controller/joystick.
+        #     name = joystick.get_name()
+        #     textPrint.tprint(screen, "Joystick name: {}".format(name))
+        #
+        #     buttons = joystick.get_numbuttons()
+        #     textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
+        #     textPrint.indent()
+        #
+        #     for i in range(buttons):
+        #         button = joystick.get_button(i)
+        #         textPrint.tprint(screen,
+        #                          "Button {:>2} value: {}".format(i, button))
+        #     textPrint.unindent()
 
-            textPrint.tprint(screen, "Joystick {}".format(joy_num))
-            textPrint.indent()
+        red = (200, 0, 0)
+        circleX = 100
+        circleY = 100
+        radius = 10
+        pygame.draw.circle(screen, red, (circleX, circleY), radius)  # DRAW CIRCLE
 
-            # Get the name from the OS for the controller/joystick.
-            name = joystick.get_name()
-            textPrint.tprint(screen, "Joystick name: {}".format(name))
 
-            buttons = joystick.get_numbuttons()
-            textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
-            textPrint.indent()
 
-            for _i in range(buttons):
-                button = joystick.get_button(_i)
-                textPrint.tprint(screen,
-                                 "Button {:>2} value: {}".format(_i, button))
-            textPrint.unindent()
+        # if mouse is hovered on a button it
+        # changes to lighter shade
+        if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
+            pygame.draw.rect(screen, color_light, [width / 2, height / 2, 140, 40])
+
+        else:
+            pygame.draw.rect(screen, color_dark, [width / 2, height / 2, 140, 40])
+
+        # superimposing the text onto our button
+        screen.blit(text, (width / 2 + 50, height / 2))
 
         #
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
@@ -144,6 +196,5 @@ if __name__ == '__main__':
     stop_music()
 
     # Close the window and quit.
-    # If you forget this line, the program will 'hang'
-    # on exit if running from IDLE.
+    # If you forget this line, the program will 'hang' on exit if running from IDLE.
     pygame.quit()
