@@ -1,5 +1,7 @@
 import pygame
+import glob
 
+blind_test_dir = "music/noel/"
 
 # Define some colors.
 BLACK = pygame.Color('black')
@@ -62,10 +64,10 @@ if __name__ == '__main__':
 
     pygame.init()
 
-    print("init pygame sound mixer")
     pygame.mixer.init()
+    file_list = glob.glob(blind_test_dir + "*.mp3")
 
-    play_music("music/Musique_Noel.mp3")
+    music_is_playing = False
 
     # Set the width and height of the screen (width, height).
     screen = pygame.display.set_mode((500, 700))
@@ -110,17 +112,24 @@ if __name__ == '__main__':
         #
         # EVENT PROCESSING STEP
         #
-        for event in pygame.event.get():  # User did something.
-            if event.type == pygame.QUIT:  # If user clicked close.
-                done = True  # Flag that we are done, so we exit this loop.
+        for event in pygame.event.get():  # User did something
+            if event.type == pygame.QUIT:  # If user clicked close in window bar
+                done = True  # Flag that we are done, so we exit this loop
+
             elif event.type == pygame.JOYBUTTONDOWN:
                 team_pressed_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
                 stop_music()
+                music_is_playing = False
+
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # if the mouse is clicked on the button the game is terminated
                 if width / 2 <= mouse[0] <= width / 2 + 140 and height / 2 <= mouse[1] <= height / 2 + 40:
-                    continue_music()
+                    if not music_is_playing:
+                        play_music(file_list[0])
+                        music_is_playing = True
+                    else:
+                        continue_music()
 
         #
         # DRAWING STEP
@@ -131,7 +140,11 @@ if __name__ == '__main__':
 
 
         textPrint.tprint(screen, f"Last team having pressed a button {team_pressed_a_button}")
+        textPrint.tprint(screen, "")
+
         textPrint.indent()
+        textPrint.tprint(screen, f"Score team BLUE: {0}")
+        textPrint.tprint(screen, f"Score team   RED: {1}")
 
 
         red = (200, 0, 0)
