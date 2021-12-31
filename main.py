@@ -1,8 +1,13 @@
 import pygame
 import glob
 import os
+import random
 
-blind_test_dir = "music/noel/"
+
+
+blind_test_dir = "music/blind_test/"
+
+
 
 # Define some colors.
 BLACK = pygame.Color('black')
@@ -88,6 +93,7 @@ if __name__ == '__main__':
 
     pygame.mixer.init()
     file_list = glob.glob(blind_test_dir + "*.mp3")
+    random.shuffle(file_list)
 
     music_is_playing = False
 
@@ -128,6 +134,7 @@ if __name__ == '__main__':
         joystick.init()
 
     team_pressed_a_button = ""
+    last_team_pressing_a_button = ""
     team_color = BLACK
     red_score = 0
     blue_score = 0
@@ -168,10 +175,13 @@ if __name__ == '__main__':
                 done = True  # Flag that we are done, so we exit this loop
 
             elif event.type == pygame.JOYBUTTONDOWN:
-                team_pressed_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
-                team_color = BLUE if event.__dict__['joy'] == 0 else RED
-                stop_music()
-                music_is_playing = False
+                last_team_pressing_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
+                if music_is_playing:
+                    team_pressed_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
+                    last_team_pressing_a_button = ""
+                    team_color = BLUE if event.__dict__['joy'] == 0 else RED
+                    stop_music()
+                    music_is_playing = False
 
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -182,6 +192,7 @@ if __name__ == '__main__':
                         music_number_to_play, music_playing = new_music(music_number_to_play)
                         music_is_playing = True
                         show_answer = False
+                        last_team_pressing_a_button = ""
                     else:
                         continue_music()
 
@@ -197,6 +208,7 @@ if __name__ == '__main__':
                     elif team_pressed_a_button == "red":
                         red_score += 1
                     team_pressed_a_button = ""
+                    last_team_pressing_a_button = ""
                     team_color = BLACK
 
                 elif button_bad_pos_X <= mouse[0] <= button_bad_pos_X + button_bad_width and \
@@ -207,6 +219,7 @@ if __name__ == '__main__':
                     elif team_pressed_a_button == "red":
                         blue_score += 1
                     team_pressed_a_button = ""
+                    last_team_pressing_a_button = ""
                     team_color = BLACK
 
         #
@@ -221,6 +234,8 @@ if __name__ == '__main__':
 
         textPrint.tprint(screen, "")
         textPrint.indent()
+        if last_team_pressing_a_button != "" and team_pressed_a_button == "":
+            textPrint.tprint(screen, f"{last_team_pressing_a_button} is buzzing for fun", color=BLUE if last_team_pressing_a_button == "blue" else RED)
         if team_pressed_a_button != "":
             textPrint.tprint(screen, f"{team_pressed_a_button} team has got an answer !", color=team_color)
             textPrint.tprint(screen, "")
