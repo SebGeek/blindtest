@@ -6,6 +6,8 @@ blind_test_dir = "music/noel/"
 # Define some colors.
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
+BLUE = pygame.Color('blue')
+RED = pygame.Color('red')
 
 # white color
 color = (255, 255, 255)
@@ -15,23 +17,21 @@ color_light = (170, 170, 170)
 color_dark = (100, 100, 100)
 
 
-# This is a simple class that will help us print to the screen.
-# It has nothing to do with the joysticks, just outputting the
-# information.
+# This is a simple class that will help us print to the screen
 class TextPrint(object):
     def __init__(self):
         self.reset()
-        self.font = pygame.font.Font(None, 20)
+        self.font = pygame.font.Font(None, 50)
 
-    def tprint(self, screen, textString):
-        textBitmap = self.font.render(textString, True, BLACK)
+    def tprint(self, screen, textString, color=BLACK):
+        textBitmap = self.font.render(textString, True, color)
         screen.blit(textBitmap, (self.x, self.y))
         self.y += self.line_height
 
     def reset(self):
         self.x = 10
         self.y = 10
-        self.line_height = 15
+        self.line_height = 50
 
     def indent(self):
         self.x += 10
@@ -89,17 +89,18 @@ if __name__ == '__main__':
     music_is_playing = False
 
     # Set the width and height of the screen (width, height).
-    screen = pygame.display.set_mode((500, 700))
+    screen = pygame.display.set_mode((1200, 700))
 
-    pygame.display.set_caption("My Game")
+    pygame.display.set_caption("Blind Test")
 
 
     width = screen.get_width()
     height = screen.get_height()
 
     smallfont = pygame.font.SysFont('Corbel', 35)
-    text_continue = smallfont.render('continue', True, color)
-    text_bad = smallfont.render('bad', True, color)
+    text_continue = smallfont.render('Start / continue playing the music', True, color)
+    text_bad = smallfont.render('Bad answer', True, color)
+    text_good = smallfont.render('Good answer', True, color)
 
     # Loop until the user clicks the close button.
     done = False
@@ -123,19 +124,25 @@ if __name__ == '__main__':
         joystick.init()
 
     team_pressed_a_button = ""
+    team_color = BLACK
     red_score = 0
     blue_score = 0
     music_number_to_play = 0
 
     button_continue_pos_X = 10
-    button_continue_pos_Y = 200
-    button_continue_width = 140
+    button_continue_pos_Y = 300
+    button_continue_width = 500
     button_continue_height = 40
 
-    button_bad_pos_X = 10
-    button_bad_pos_Y = 300
-    button_bad_width = 140
+    button_bad_pos_X = 300
+    button_bad_pos_Y = 400
+    button_bad_width = 200
     button_bad_height = 40
+
+    button_good_pos_X = 10
+    button_good_pos_Y = 400
+    button_good_width = 200
+    button_good_height = 40
 
     # -------- Main Program Loop -----------
     while not done:
@@ -151,24 +158,31 @@ if __name__ == '__main__':
 
             elif event.type == pygame.JOYBUTTONDOWN:
                 team_pressed_a_button = "blue" if event.__dict__['joy'] == 0 else "red"
+                team_color = BLUE if event.__dict__['joy'] == 0 else RED
                 stop_music()
                 music_is_playing = False
 
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # if the mouse is clicked on the button the game is terminated
+                # if the mouse is clicked on the button CONTINUE
                 if button_continue_pos_X <= mouse[0] <= button_continue_pos_X + button_continue_width and \
                    button_continue_pos_Y <= mouse[1] <= button_continue_pos_Y + button_continue_height:
                     if not music_is_playing:
-                        if team_pressed_a_button == "blue":
-                            blue_score += 1
-                        elif team_pressed_a_button == "red":
-                            red_score += 1
-
                         music_number_to_play = new_music(music_number_to_play)
                         music_is_playing = True
                     else:
                         continue_music()
+
+                elif button_good_pos_X <= mouse[0] <= button_good_pos_X + button_good_width and \
+                   button_good_pos_Y <= mouse[1] <= button_good_pos_Y + button_good_height:
+                    # increment the score of the team that has pressed the button
+                    if team_pressed_a_button == "blue":
+                        blue_score += 1
+                    elif team_pressed_a_button == "red":
+                        red_score += 1
+                    team_pressed_a_button = ""
+                    team_color = BLACK
+
                 elif button_bad_pos_X <= mouse[0] <= button_bad_pos_X + button_bad_width and \
                    button_bad_pos_Y <= mouse[1] <= button_bad_pos_Y + button_bad_height:
                     # increment the score of other team
@@ -176,9 +190,8 @@ if __name__ == '__main__':
                         red_score += 1
                     elif team_pressed_a_button == "red":
                         blue_score += 1
-
-                    music_number_to_play = new_music(music_number_to_play)
-                    music_is_playing = True
+                    team_pressed_a_button = ""
+                    team_color = BLACK
 
         #
         # DRAWING STEP
@@ -187,15 +200,17 @@ if __name__ == '__main__':
         screen.fill(WHITE)
         textPrint.reset()
 
-        textPrint.tprint(screen, f"Last team having pressed a button is {team_pressed_a_button}")
-        textPrint.tprint(screen, "")
+        textPrint.tprint(screen, f"Score team BLUE: {blue_score}", color=BLUE)
+        textPrint.tprint(screen, f"Score team   RED: {red_score}", color=RED)
 
+        textPrint.tprint(screen, "")
         textPrint.indent()
-        textPrint.tprint(screen, f"Score team BLUE: {blue_score}")
-        textPrint.tprint(screen, f"Score team   RED: {red_score}")
+        if team_pressed_a_button != "":
+            textPrint.tprint(screen, f"{team_pressed_a_button} team has got an answer !", color=team_color)
 
         draw_button(screen, text_continue, button_continue_pos_X, button_continue_pos_Y, button_continue_width, button_continue_height)
         draw_button(screen, text_bad, button_bad_pos_X, button_bad_pos_Y, button_bad_width, button_bad_height)
+        draw_button(screen, text_good, button_good_pos_X, button_good_pos_Y, button_good_width, button_good_height)
 
         #
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
