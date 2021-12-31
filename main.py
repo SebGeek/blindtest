@@ -3,7 +3,8 @@ import glob
 import os
 import random
 
-
+# todo ajouter un son de buzzer
+# todo afficher que les boutons nécessaires
 
 blind_test_dir = "music/blind_test/"
 
@@ -97,8 +98,9 @@ if __name__ == '__main__':
 
     music_is_playing = False
 
-    # Set the width and height of the screen (width, height).
-    screen = pygame.display.set_mode((900, 700))
+    # Set the width and height of the screen (width, height)
+    # wide enough to show the entire song title
+    screen = pygame.display.set_mode((1000, 700))
 
     pygame.display.set_caption("Blind Test")
 
@@ -108,6 +110,7 @@ if __name__ == '__main__':
 
     smallfont = pygame.font.SysFont('Corbel', 35)
     text_continue = smallfont.render('Start / continue playing the music', True, color)
+    text_stop = smallfont.render('Stop the music', True, color)
     text_bad = smallfont.render('Bad answer', True, color)
     text_good = smallfont.render('Good answer', True, color)
     text_check = smallfont.render('Check answer', True, color)
@@ -146,6 +149,11 @@ if __name__ == '__main__':
     button_continue_pos_Y = 400
     button_continue_width = 500
     button_continue_height = 40
+
+    button_stop_pos_X = 600
+    button_stop_pos_Y = 400
+    button_stop_width = 230
+    button_stop_height = 40
 
     button_check_pos_X = 150
     button_check_pos_Y = 500
@@ -192,6 +200,15 @@ if __name__ == '__main__':
                     music_is_playing = True
                     show_answer = False
                     last_team_pressing_a_button = ""
+                    team_pressed_a_button = ""
+
+                if button_stop_pos_X <= mouse[0] <= button_stop_pos_X + button_stop_width and \
+                   button_stop_pos_Y <= mouse[1] <= button_stop_pos_Y + button_stop_height:
+                    stop_music()
+                    music_is_playing = False
+                    show_answer = True
+                    last_team_pressing_a_button = ""
+                    team_pressed_a_button = "No"
 
                 elif button_check_pos_X <= mouse[0] <= button_check_pos_X + button_check_width and \
                      button_check_pos_Y <= mouse[1] <= button_check_pos_Y + button_check_height:
@@ -243,6 +260,7 @@ if __name__ == '__main__':
                 textPrint.tprint(screen, f"{music_playing}")
 
         draw_button(screen, text_continue, button_continue_pos_X, button_continue_pos_Y, button_continue_width, button_continue_height)
+        draw_button(screen, text_stop, button_stop_pos_X, button_stop_pos_Y, button_stop_width, button_stop_height)
         draw_button(screen, text_bad, button_bad_pos_X, button_bad_pos_Y, button_bad_width, button_bad_height)
         draw_button(screen, text_good, button_good_pos_X, button_good_pos_Y, button_good_width, button_good_height)
         draw_button(screen, text_check, button_check_pos_X, button_check_pos_Y, button_check_width, button_check_height)
