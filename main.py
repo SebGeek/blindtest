@@ -98,7 +98,7 @@ if __name__ == '__main__':
     music_is_playing = False
 
     # Set the width and height of the screen (width, height).
-    screen = pygame.display.set_mode((1200, 700))
+    screen = pygame.display.set_mode((900, 700))
 
     pygame.display.set_caption("Blind Test")
 
@@ -188,13 +188,10 @@ if __name__ == '__main__':
                 # if the mouse is clicked on the button CONTINUE
                 if button_continue_pos_X <= mouse[0] <= button_continue_pos_X + button_continue_width and \
                    button_continue_pos_Y <= mouse[1] <= button_continue_pos_Y + button_continue_height:
-                    if not music_is_playing:
-                        music_number_to_play, music_playing = new_music(music_number_to_play)
-                        music_is_playing = True
-                        show_answer = False
-                        last_team_pressing_a_button = ""
-                    else:
-                        continue_music()
+                    music_number_to_play, music_playing = new_music(music_number_to_play)
+                    music_is_playing = True
+                    show_answer = False
+                    last_team_pressing_a_button = ""
 
                 elif button_check_pos_X <= mouse[0] <= button_check_pos_X + button_check_width and \
                      button_check_pos_Y <= mouse[1] <= button_check_pos_Y + button_check_height:
