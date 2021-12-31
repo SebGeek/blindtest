@@ -1,5 +1,6 @@
 import pygame
 import glob
+import os
 
 blind_test_dir = "music/noel/"
 
@@ -71,12 +72,14 @@ def draw_button(screen, text, button_pos_X, button_pos_Y, button_width, button_h
     screen.blit(text, (button_pos_X, button_pos_Y))
 
 def new_music(music_number_to_play):
+    music_to_play = file_list[music_number_to_play]
     play_music(file_list[music_number_to_play])
     music_number_to_play += 1
     if music_number_to_play == len(file_list):
         music_number_to_play = 0
         print("All musics have been played !")
-    return music_number_to_play
+    music_to_play = os.path.splitext(music_to_play.split("\\")[-1])[0]
+    return music_number_to_play, music_to_play
 
 
 if __name__ == '__main__':
@@ -101,6 +104,7 @@ if __name__ == '__main__':
     text_continue = smallfont.render('Start / continue playing the music', True, color)
     text_bad = smallfont.render('Bad answer', True, color)
     text_good = smallfont.render('Good answer', True, color)
+    text_check = smallfont.render('Check answer', True, color)
 
     # Loop until the user clicks the close button.
     done = False
@@ -128,19 +132,26 @@ if __name__ == '__main__':
     red_score = 0
     blue_score = 0
     music_number_to_play = 0
+    show_answer = False
+    music_playing = ""
 
     button_continue_pos_X = 10
-    button_continue_pos_Y = 300
+    button_continue_pos_Y = 400
     button_continue_width = 500
     button_continue_height = 40
 
+    button_check_pos_X = 150
+    button_check_pos_Y = 500
+    button_check_width = 200
+    button_check_height = 40
+
     button_bad_pos_X = 300
-    button_bad_pos_Y = 400
+    button_bad_pos_Y = 600
     button_bad_width = 200
     button_bad_height = 40
 
     button_good_pos_X = 10
-    button_good_pos_Y = 400
+    button_good_pos_Y = 600
     button_good_width = 200
     button_good_height = 40
 
@@ -168,13 +179,18 @@ if __name__ == '__main__':
                 if button_continue_pos_X <= mouse[0] <= button_continue_pos_X + button_continue_width and \
                    button_continue_pos_Y <= mouse[1] <= button_continue_pos_Y + button_continue_height:
                     if not music_is_playing:
-                        music_number_to_play = new_music(music_number_to_play)
+                        music_number_to_play, music_playing = new_music(music_number_to_play)
                         music_is_playing = True
+                        show_answer = False
                     else:
                         continue_music()
 
+                elif button_check_pos_X <= mouse[0] <= button_check_pos_X + button_check_width and \
+                     button_check_pos_Y <= mouse[1] <= button_check_pos_Y + button_check_height:
+                    show_answer = True
+
                 elif button_good_pos_X <= mouse[0] <= button_good_pos_X + button_good_width and \
-                   button_good_pos_Y <= mouse[1] <= button_good_pos_Y + button_good_height:
+                     button_good_pos_Y <= mouse[1] <= button_good_pos_Y + button_good_height:
                     # increment the score of the team that has pressed the button
                     if team_pressed_a_button == "blue":
                         blue_score += 1
@@ -184,7 +200,7 @@ if __name__ == '__main__':
                     team_color = BLACK
 
                 elif button_bad_pos_X <= mouse[0] <= button_bad_pos_X + button_bad_width and \
-                   button_bad_pos_Y <= mouse[1] <= button_bad_pos_Y + button_bad_height:
+                     button_bad_pos_Y <= mouse[1] <= button_bad_pos_Y + button_bad_height:
                     # increment the score of other team
                     if team_pressed_a_button == "blue":
                         red_score += 1
@@ -207,10 +223,17 @@ if __name__ == '__main__':
         textPrint.indent()
         if team_pressed_a_button != "":
             textPrint.tprint(screen, f"{team_pressed_a_button} team has got an answer !", color=team_color)
+            textPrint.tprint(screen, "")
+            if show_answer:
+                textPrint.unindent()
+                textPrint.tprint(screen, f"Answer is")
+                textPrint.indent()
+                textPrint.tprint(screen, f"{music_playing}")
 
         draw_button(screen, text_continue, button_continue_pos_X, button_continue_pos_Y, button_continue_width, button_continue_height)
         draw_button(screen, text_bad, button_bad_pos_X, button_bad_pos_Y, button_bad_width, button_bad_height)
         draw_button(screen, text_good, button_good_pos_X, button_good_pos_Y, button_good_width, button_good_height)
+        draw_button(screen, text_check, button_check_pos_X, button_check_pos_Y, button_check_width, button_check_height)
 
         #
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
