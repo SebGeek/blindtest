@@ -3,11 +3,10 @@ import glob
 import os
 import random
 
-# todo ajouter un son de buzzer
-# todo afficher que les boutons nécessaires
 
-blind_test_dir = "music/blind_test/"
-
+# blind_test_dir = "music/Elsa/"
+# blind_test_dir = "music/H2 Rock Années 80/"
+blind_test_dir = "music/Vinch/"
 
 
 # Define some colors.
@@ -47,11 +46,17 @@ class TextPrint(object):
         self.x -= 10
 
 
-
 def play_music(filepath):
     pygame.mixer.music.load(filepath)
     print("playing", filepath)
-    pygame.mixer.music.play()
+    try:
+        pygame.mixer.music.play()
+    except:
+        print(f"bad format (not MPEG audio): {filepath}")
+
+def play_buzzer():
+    obj_buzz = pygame.mixer.Sound('buzzer.mp3')
+    obj_buzz.play(0)
 
 def stop_music():
     pygame.mixer.music.pause()
@@ -78,6 +83,7 @@ def draw_button(screen, text, button_pos_X, button_pos_Y, button_width, button_h
     screen.blit(text, (button_pos_X, button_pos_Y))
 
 def new_music(music_number_to_play):
+    stop_music()
     music_to_play = file_list[music_number_to_play]
     play_music(file_list[music_number_to_play])
     music_number_to_play += 1
@@ -109,8 +115,8 @@ if __name__ == '__main__':
     height = screen.get_height()
 
     smallfont = pygame.font.SysFont('Corbel', 35)
-    text_continue = smallfont.render('Start / continue playing the music', True, color)
-    text_stop = smallfont.render('Stop the music', True, color)
+    text_start = smallfont.render('Start playing a new music', True, color)
+    text_continue = smallfont.render('Continue the music', True, color)
     text_bad = smallfont.render('Bad answer', True, color)
     text_good = smallfont.render('Good answer', True, color)
     text_check = smallfont.render('Check answer', True, color)
@@ -145,15 +151,15 @@ if __name__ == '__main__':
     show_answer = False
     music_playing = ""
 
-    button_continue_pos_X = 10
-    button_continue_pos_Y = 400
-    button_continue_width = 500
-    button_continue_height = 40
+    button_start_pos_X = 10
+    button_start_pos_Y = 400
+    button_start_width = 400
+    button_start_height = 40
 
-    button_stop_pos_X = 600
-    button_stop_pos_Y = 400
-    button_stop_width = 230
-    button_stop_height = 40
+    button_continue_pos_X = 600
+    button_continue_pos_Y = 400
+    button_continue_width = 300
+    button_continue_height = 40
 
     button_check_pos_X = 150
     button_check_pos_Y = 500
@@ -189,24 +195,24 @@ if __name__ == '__main__':
                     last_team_pressing_a_button = ""
                     team_color = BLUE if event.__dict__['joy'] == 0 else RED
                     stop_music()
+                    play_buzzer()
                     music_is_playing = False
 
             # checks if a mouse is clicked
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # if the mouse is clicked on the button CONTINUE
-                if button_continue_pos_X <= mouse[0] <= button_continue_pos_X + button_continue_width and \
-                   button_continue_pos_Y <= mouse[1] <= button_continue_pos_Y + button_continue_height:
+                if button_start_pos_X <= mouse[0] <= button_start_pos_X + button_start_width and \
+                   button_start_pos_Y <= mouse[1] <= button_start_pos_Y + button_start_height:
                     music_number_to_play, music_playing = new_music(music_number_to_play)
                     music_is_playing = True
                     show_answer = False
                     last_team_pressing_a_button = ""
                     team_pressed_a_button = ""
 
-                if button_stop_pos_X <= mouse[0] <= button_stop_pos_X + button_stop_width and \
-                   button_stop_pos_Y <= mouse[1] <= button_stop_pos_Y + button_stop_height:
-                    stop_music()
-                    music_is_playing = False
-                    show_answer = True
+                if button_continue_pos_X <= mouse[0] <= button_continue_pos_X + button_continue_width and \
+                   button_continue_pos_Y <= mouse[1] <= button_continue_pos_Y + button_continue_height:
+                    continue_music()
+                    music_is_playing = True
                     last_team_pressing_a_button = ""
                     team_pressed_a_button = "No"
 
@@ -259,8 +265,8 @@ if __name__ == '__main__':
                 textPrint.indent()
                 textPrint.tprint(screen, f"{music_playing}")
 
+        draw_button(screen, text_start, button_start_pos_X, button_start_pos_Y, button_start_width, button_start_height)
         draw_button(screen, text_continue, button_continue_pos_X, button_continue_pos_Y, button_continue_width, button_continue_height)
-        draw_button(screen, text_stop, button_stop_pos_X, button_stop_pos_Y, button_stop_width, button_stop_height)
         draw_button(screen, text_bad, button_bad_pos_X, button_bad_pos_Y, button_bad_width, button_bad_height)
         draw_button(screen, text_good, button_good_pos_X, button_good_pos_Y, button_good_width, button_good_height)
         draw_button(screen, text_check, button_check_pos_X, button_check_pos_Y, button_check_width, button_check_height)
