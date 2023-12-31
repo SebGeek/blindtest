@@ -16,9 +16,9 @@
 import sys
 from PySide6 import QtWidgets
 from functools import partial
-from resource.quizz_master import Ui_Dialog
+from resource.quizz_master_gui import Ui_Dialog
 
-# C:\Users\famil\PycharmProjects\venv\Scripts\pyside6-uic.exe resource/quizz_master.ui -o resource/quizz_master.py
+# C:\Users\famil\PycharmProjects\venv\Scripts\pyside6-uic.exe resource/quizz_master_gui.ui -o resource/quizz_master_gui.py
 
 
 import time
