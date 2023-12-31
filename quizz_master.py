@@ -12,6 +12,8 @@
 # Button to click on the team who scored
 #     Pronounce the score
 
+
+import time
 import hid
 import sys
 from PySide6 import QtWidgets
@@ -24,10 +26,10 @@ import glob
 import random
 from resource.quizz_master_gui import Ui_Dialog
 
-def set_volume(volume): # todo
+def set_volume(volume):
     """ Set the volume of the music playback, in percentage (0 to 100)
     """
-    print(f"set volume {volume}%")
+    #print(f"set volume {volume}%")
     pygame.mixer.music.set_volume(volume / 100)
 
 def play_music(filepath):
@@ -40,10 +42,6 @@ def play_music(filepath):
 
 def play_gun_sound():
     sounds_guns_list = glob.glob("sounds/guns/*.mp3")
-    play_music(random.choice(sounds_guns_list))
-
-def play_burgerQuizzIntro():
-    sounds_guns_list = glob.glob("sounds/BurgerQuizz/BurgerQuizzIntro.mp3")
     play_music(random.choice(sounds_guns_list))
 
 def pronounce(text_to_pronounce):
@@ -60,6 +58,7 @@ def pronounce_start():
 
 def pronounce_fastest_team(team):
     play_gun_sound()
+    time.sleep(2)
     fastest_team_list = {"blue_team": "Mayo est le plus rapide", "red_team": "Ketchup est le plus rapide", "draw_game": "Egalité parfaite !"}
     pronounce(fastest_team_list[team])
 
@@ -96,6 +95,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
 
         pygame.init()
         pygame.mixer.init()
+        set_volume(100)
         self.joystick_init()
 
         self.timer = QTimer(self)
@@ -109,7 +109,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
         pygame.quit()
 
     def pushButton_start_func(self):
-        #play_burgerQuizzIntro() todo
         pronounce_start()
         self.game_is_running = True
         self.fastestTeam.setText("")
@@ -145,6 +144,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
                         fastest_team = "draw_game"
                         self.fastestTeam.setStyleSheet(u"color: black")
                         self.fastestTeam.setText("Egalité parfaite ! (à 10 ms près)")
+                    self.repaint()
                     pronounce_fastest_team(fastest_team)
                     self.game_is_running = False
             else:
@@ -153,15 +153,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
     def joystick_init(self):
         # for device in hid.enumerate():
         #     print(device)
+        try:
+            self.gamepad_blue = hid.device()
+            self.gamepad_blue.open_path(b'\\\\?\\HID#VID_0583&PID_2060#6&24f58a1&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}')
+            self.gamepad_blue.set_nonblocking(True)
 
-        self.gamepad_blue = hid.device()
-        self.gamepad_blue.open_path(b'\\\\?\\HID#VID_0583&PID_2060#6&24f58a1&1&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}')
-        self.gamepad_blue.set_nonblocking(True)
-
-        self.gamepad_red = hid.device()
-        self.gamepad_red.open_path(b'\\\\?\\HID#VID_0583&PID_2060#6&2b307203&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}')
-        self.gamepad_red.set_nonblocking(True)
-
+            self.gamepad_red = hid.device()
+            self.gamepad_red.open_path(b'\\\\?\\HID#VID_0583&PID_2060#6&2b307203&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}')
+            self.gamepad_red.set_nonblocking(True)
+        except OSError:
+            print("ERROR: gampepads not found")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
