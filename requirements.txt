@@ -1,3 +1,4 @@
 pygame
 gtts
 pyside6
+hidapi
