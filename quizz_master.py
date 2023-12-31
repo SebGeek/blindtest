@@ -17,26 +17,18 @@ import sys
 from PySide6 import QtWidgets
 from PySide6.QtCore import QTimer
 from functools import partial
-from resource.quizz_master_gui import Ui_Dialog
-
-# C:\Users\famil\PycharmProjects\venv\Scripts\pyside6-uic.exe resource/quizz_master_gui.ui -o resource/quizz_master_gui.py
-
-
 import pygame
 from gtts import gTTS
 from io import BytesIO
 import glob
 import random
+from resource.quizz_master_gui import Ui_Dialog
 
 def set_volume(volume): # todo
     """ Set the volume of the music playback, in percentage (0 to 100)
     """
     print(f"set volume {volume}%")
     pygame.mixer.music.set_volume(volume / 100)
-
-def play_buzzer():
-    obj_buzz = pygame.mixer.Sound('sounds/guns/buzzer.mp3')
-    obj_buzz.play(0)
 
 def play_music(filepath):
     pygame.mixer.music.load(filepath)
@@ -63,12 +55,12 @@ def pronounce(text_to_pronounce):
     pygame.mixer.music.play()
 
 def pronounce_start():
-    list_get_ready = ["A vos marques !", "Get ready... Go !", "Attention, c'est parti !"]
+    list_get_ready = ["A vos marques !", "Get ready !", "Attention, c'est parti !"]
     pronounce(random.choice(list_get_ready))
 
 def pronounce_fastest_team(team):
     play_gun_sound()
-    fastest_team_list = {"blue_team": "Equipe bleue !", "red_team": "Equipe rouge !", "draw_game": "Egalité parfaite !"}
+    fastest_team_list = {"blue_team": "Mayo est le plus rapide", "red_team": "Ketchup est le plus rapide", "draw_game": "Egalité parfaite !"}
     pronounce(fastest_team_list[team])
 
 def pronounce_score(dict_score):
@@ -90,6 +82,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
         self.gamepad_blue = None
         self.gamepad_red = None
         self.game_is_running = False
+        self.score = {"red_team": 0, "blue_team": 0}
 
         self.pushButton_start.clicked.connect(self.pushButton_start_func)
         self.pushButton_blueteam_plus1.clicked.connect(partial(self.pushButton_blueteam_func, 1))
@@ -98,6 +91,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
         self.pushButton_redteam_plus1.clicked.connect(partial(self.pushButton_redteam_func, 1))
         self.pushButton_redteam_plus3.clicked.connect(partial(self.pushButton_redteam_func, 3))
         self.pushButton_redteam_minus1.clicked.connect(partial(self.pushButton_redteam_func, -1))
+
+        self.fastestTeam.setText("")
 
         pygame.init()
         pygame.mixer.init()
@@ -117,18 +112,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
         #play_burgerQuizzIntro() todo
         pronounce_start()
         self.game_is_running = True
+        self.fastestTeam.setText("")
 
-    @staticmethod
-    def pushButton_blueteam_func(value):
-        print(f"blue {value}")
-        #self.ScoreBlue
-        score = {"red_team": 2, "blue_team": 3}
-        pronounce_score(score)
+    def pushButton_blueteam_func(self, value):
+        self.score["blue_team"] += value
+        self.ScoreBlue.setText(f'{self.score["blue_team"]}')
+        pronounce_score(self.score)
 
-    @staticmethod
-    def pushButton_redteam_func(value):
-        print(f"red {value}")
-        play_buzzer()
+    def pushButton_redteam_func(self, value):
+        self.score["red_team"] += value
+        self.ScoreRed.setText(f'{self.score["red_team"]}')
+        pronounce_score(self.score)
 
     def joystick_read(self):
         if self.game_is_running:
@@ -139,18 +133,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
                 blue_fire = report_blue[2] != 0
                 red_fire  = report_red[2] != 0
                 if blue_fire or red_fire:
-                    self.game_is_running = False
                     if blue_fire and not red_fire:
                         fastest_team = "blue_team"
+                        self.fastestTeam.setStyleSheet(u"color: blue")
+                        self.fastestTeam.setText("Mayo est le plus rapide")
                     elif red_fire and not blue_fire:
                         fastest_team = "red_team"
+                        self.fastestTeam.setStyleSheet(u"color: red")
+                        self.fastestTeam.setText("Ketchup est le plus rapide")
                     elif blue_fire and red_fire:
                         fastest_team = "draw_game"
+                        self.fastestTeam.setStyleSheet(u"color: black")
+                        self.fastestTeam.setText("Egalité parfaite ! (à 10 ms près)")
+                    pronounce_fastest_team(fastest_team)
+                    self.game_is_running = False
             else:
                 print("ERROR in reading gamepads")
-
-            if fastest_team != "none":
-                pronounce_fastest_team(fastest_team)
 
     def joystick_init(self):
         # for device in hid.enumerate():
