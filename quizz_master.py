@@ -26,6 +26,7 @@ import glob
 import random
 from resource.quizz_master_gui import Ui_Dialog
 
+
 def set_volume(volume):
     """ Set the volume of the music playback, in percentage (0 to 100)
     """
@@ -40,10 +41,6 @@ def play_music(filepath):
     except pygame.error:
         print(f"bad format (not MPEG audio): {filepath}")
 
-def play_gun_sound():
-    sounds_guns_list = glob.glob("sounds/guns/*.mp3")
-    play_music(random.choice(sounds_guns_list))
-
 def pronounce(text_to_pronounce):
     tts = gTTS(text=text_to_pronounce, lang='fr')
     mp3 = BytesIO()
@@ -52,13 +49,13 @@ def pronounce(text_to_pronounce):
     pygame.mixer.music.load(mp3)
     pygame.mixer.music.play()
 
-def pronounce_start():
-    list_get_ready = ["A vos marques !", "Get ready !", "Attention, c'est parti !"]
-    pronounce(random.choice(list_get_ready))
-
 def pronounce_fastest_team(team):
-    play_gun_sound()
+    fastest_team_list = {"blue_team": "sounds/guns/crash-2-lightsaber-101soundboards.mp3", "red_team": "sounds/guns/buzzer.mp3",
+                         "draw_game": "sounds/guns/Rifle-Supressed-Burst-Fire-A-www.fesliyanstudios.com.mp3"}
+    play_music(fastest_team_list[team])
+
     time.sleep(2)
+
     fastest_team_list = {"blue_team": "Mayo est le plus rapide", "red_team": "Ketchup est le plus rapide", "draw_game": "Egalité parfaite !"}
     pronounce(fastest_team_list[team])
 
