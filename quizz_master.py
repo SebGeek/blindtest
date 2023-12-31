@@ -64,11 +64,11 @@ def pronounce_fastest_team(team):
 
 def pronounce_score(dict_score):
     if dict_score["red_team"] > dict_score["blue_team"]:
-        text = f'Score {dict_score["red_team"]} à {dict_score["blue_team"]} pour les rouges !'
+        text = f'Score {dict_score["red_team"]} à {dict_score["blue_team"]} pour Ketchup !'
     elif dict_score["red_team"] == dict_score["blue_team"]:
         text = f'Egalité, {dict_score["red_team"]} partout !'
     else:
-        text = f'Score {dict_score["blue_team"]} à {dict_score["red_team"]} pour les bleus !'
+        text = f'Score {dict_score["blue_team"]} à {dict_score["red_team"]} pour Mayo !'
     pronounce(text)
 
 
@@ -80,10 +80,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
 
         self.gamepad_blue = None
         self.gamepad_red = None
-        self.game_is_running = False
+        self.game_is_running = True
         self.score = {"red_team": 0, "blue_team": 0}
 
-        self.pushButton_start.clicked.connect(self.pushButton_start_func)
         self.pushButton_blueteam_plus1.clicked.connect(partial(self.pushButton_blueteam_func, 1))
         self.pushButton_blueteam_plus3.clicked.connect(partial(self.pushButton_blueteam_func, 3))
         self.pushButton_blueteam_minus1.clicked.connect(partial(self.pushButton_blueteam_func, -1))
@@ -108,11 +107,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
         self.timer.stop()
         pygame.quit()
 
-    def pushButton_start_func(self):
-        pronounce_start()
-        self.game_is_running = True
-        self.fastestTeam.setText("")
-
     def pushButton_blueteam_func(self, value):
         self.score["blue_team"] += value
         self.ScoreBlue.setText(f'{self.score["blue_team"]}')
@@ -132,6 +126,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
                 blue_fire = report_blue[2] != 0
                 red_fire  = report_red[2] != 0
                 if blue_fire or red_fire:
+                    self.game_is_running = False
                     if blue_fire and not red_fire:
                         fastest_team = "blue_team"
                         self.fastestTeam.setStyleSheet(u"color: blue")
@@ -146,7 +141,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_Dialog):
                         self.fastestTeam.setText("Egalité parfaite ! (à 10 ms près)")
                     self.repaint()
                     pronounce_fastest_team(fastest_team)
-                    self.game_is_running = False
+                    time.sleep(4)
+                    self.fastestTeam.setText("")
+                    self.game_is_running = True
             else:
                 print("ERROR in reading gamepads")
 

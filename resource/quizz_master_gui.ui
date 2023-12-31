@@ -39,7 +39,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>240</y>
+     <y>190</y>
      <width>381</width>
      <height>41</height>
     </rect>
@@ -129,24 +129,6 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_start">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>150</y>
-     <width>381</width>
-     <height>51</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>20</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Départ</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_blueteam_plus1">
