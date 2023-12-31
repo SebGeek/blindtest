@@ -42,9 +42,9 @@ class TextPrint(object):
         self.reset()
         self.font = pygame.font.Font(None, 50)
 
-    def tprint(self, screen, textString, color=BLACK):
-        textBitmap = self.font.render(textString, True, color)
-        screen.blit(textBitmap, (self.x, self.y))
+    def tprint(self, screen, text_string, color=BLACK):
+        text_bitmap = self.font.render(text_string, True, color)
+        screen.blit(text_bitmap, (self.x, self.y))
         self.y += self.line_height
 
     def reset(self):
@@ -64,7 +64,7 @@ def play_music(filepath):
     print("playing", filepath)
     try:
         pygame.mixer.music.play()
-    except:
+    except pygame.error:
         print(f"bad format (not MPEG audio): {filepath}")
 
 def play_buzzer():
@@ -78,9 +78,9 @@ def continue_music():
     pygame.mixer.music.unpause()
 
 def set_volume(volume):
-    ''' Set the volume of the music playback.
+    """ Set the volume of the music playback.
     The volume argument is a float between 0.0 and 1.0 that sets volume.
-    '''
+    """
     print(f"set volume {volume}%")
     pygame.mixer.music.set_volume(volume / 100)
 
