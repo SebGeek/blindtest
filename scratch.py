@@ -18,6 +18,11 @@ def play_gun_sound():
     play_music(random.choice(sounds_guns_list))
     time.sleep(2.5)
 
+def play_burgerQuizzIntro():
+    sounds_guns_list = glob.glob("sounds/BurgerQuizz/BurgerQuizzIntro.mp3")
+    play_music(random.choice(sounds_guns_list))
+    time.sleep(2.5)
+
 def pronounce(text_to_pronounce):
     tts = gTTS(text=text_to_pronounce, lang='fr')
     mp3 = BytesIO()
@@ -51,6 +56,7 @@ def pronounce_score(dict_score):
 if __name__ == '__main__':
     pygame.mixer.init()
 
+    play_burgerQuizzIntro()
     pronounce_start()
 
     pronounce_fastest_team("red_team")
